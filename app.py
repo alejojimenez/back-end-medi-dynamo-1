@@ -29,7 +29,6 @@ app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'X3#stejen' 
 app.config['MYSQL_DB'] = 'medidynamo' 
 
-
 db.init_app(app)
 Migrate(app, db)
 manager = Manager(app)
@@ -39,7 +38,9 @@ bcrypt = Bcrypt(app)
 mysql = MySQL(app)
 CORS(app)
 
-# Registrase
+#######################################
+##        SIGNUP - REGISTRARSE       ##
+#######################################
 @app.route('/signup', methods=["POST"])
 def signup():
     if request.method == 'POST':
@@ -69,7 +70,9 @@ def signup():
 
         return jsonify({"success": "Thanks. your register was successfully", "status": "true"}), 200
 
-# Login
+######################################
+##          SIGNIN - LOGIN          ##
+######################################
 @app.route('/login', methods=["POST"])
 def login():
     if request.method == 'POST':
@@ -101,7 +104,9 @@ def login():
 
         return jsonify(data), 200
 
-# POST
+###############################################################
+##                       CREATE - POST                       ##
+###############################################################
 @app.route('/api/medidynamo/create/patients', methods=['POST'])
 def create_patients():
     cur = mysql.connection.cursor()
@@ -138,7 +143,9 @@ def create_patients():
 
     return jsonify({'result' : result})
 
-# GET
+############################################################
+##                       READ - GET                       ##
+############################################################
 @app.route('/api/medidynamo/read/patients', methods=['GET'])
 def read_patients():
     cur = mysql.connection.cursor()
@@ -152,22 +159,57 @@ def read_patients():
         json_data.append(dict(zip(row_headers, result)))
     return jsonify(json_data)
 
-# PUT
-@app.route('/api/update_notification/<int:id>', methods=['PUT'])
-def updateNotification(id):
+#######################################################################
+##                            UPDATE - PUT                           ##
+#######################################################################
+@app.route('/api/medidynamo/update/patient/<int:id>', methods=['PUT'])
+def update_patient(id):
     if request.method == 'PUT':
         cur = mysql.connection.cursor()
-        status = request.get_json()['status']
+        rut = request.get_json()['rut']
+        firstname = request.get_json()['firstname']
+        lastname = request.get_json()['lastname']
+        address = request.get_json()['address']
+        telephone = request.get_json()['telephone']    
+        age = request.get_json()['age']
+        sex = request.get_json()['sex']
+        forecast = request.get_json()['forecast']
         cur.execute("""
-                UPDATE notification
-                SET status = %s
-                WHERE notificationId=%s
-            """, (status, id,))
+            UPDATE patients
+            SET rut = %s,
+                firstname = %s,
+                lastname = %s,
+                address = %s,
+                telephone = %s,
+                age = %s,
+                sex = %s,
+                forecast = %s
+            WHERE id=%s
+            """, (rut, firstname, lastname, address, telephone, age, sex, forecast, id,))
         mysql.connection.commit()
         result = {
-            'status': status
+            'rut': rut,
+            'firstname': firstname,
+            'lastname': lastname,
+            'address': address,
+            'telephone': telephone,
+            'age': age,
+            'sex': sex,
+            'forecast': forecast
         }
     return jsonify({'result': result})
+
+##########################################################################
+##                             DELETE - DELETE                          ##
+##########################################################################
+@app.route('/api/medidynamo/delete/patient/<int:id>', methods=['DELETE'])
+def delete_patient(id):
+    cur = mysql.connection.cursor()
+    cur.execute('DELETE FROM patients WHERE id=%s', (id,))
+    mysql.connection.commit()
+    print(id)
+    return jsonify({"id": id})
+
 
 if __name__ == "__main__":
     manager.run()
