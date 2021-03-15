@@ -102,7 +102,7 @@ def login():
         return jsonify(data), 200
 
 # POST
-@app.route('/patients', methods=['POST'])
+@app.route('/api/medidynamo/create/patients', methods=['POST'])
 def create_patients():
     cur = mysql.connection.cursor()
     rut = request.get_json()['rut']
@@ -139,10 +139,10 @@ def create_patients():
     return jsonify({'result' : result})
 
 # GET
-@app.route('/api/get_notification', methods=['GET'])
-def get_notification():
+@app.route('/api/medidynamo/read/patients', methods=['GET'])
+def read_patients():
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM notification")
+    cur.execute("SELECT * FROM patients")
     row_headers = [x[0]
         for x in cur.description] # this will extract row headers
     dataNotification = cur.fetchall()
