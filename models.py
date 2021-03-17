@@ -28,6 +28,7 @@ class Patients(db.Model):
     telephone = db.Column(db.String(15), nullable=False )
     age = db.Column(db.String(3), nullable=False )
     sex = db.Column(db.String(15), nullable=False )
+    email = db.Column(db.String(80), nullable=False, unique=True)
     forecast = db.Column(db.String(50), nullable=False )
 
     def __repr__(self):
@@ -43,5 +44,6 @@ class Patients(db.Model):
             "telephone": self.telephone,
             "age": self.age,
             "sex": self.sex,
+            "email":self.email,
             "forecast": self.forecast
         }

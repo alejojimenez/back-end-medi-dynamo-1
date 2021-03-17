@@ -16,6 +16,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
+## Permite conectar la BD MySQL
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:X3#stejen@127.0.0.1:3306/medidynamo" 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -23,7 +24,7 @@ app.config["DEBUG"] = True
 app.config["ENV"] = "development"
 app.config["SECRET_KEY"] = "secret_key"
 app.config["JWT_SECRET_KEY"] = 'encrypt'
-
+## Permite instanciar de manera local la BD MySQL
 app.config['MYSQL_HOST'] = '127.0.0.1' 
 app.config['MYSQL_USER'] = 'root' 
 app.config['MYSQL_PASSWORD'] = 'X3#stejen' 
@@ -117,16 +118,18 @@ def create_patients():
     telephone = request.get_json()['telephone']    
     age = request.get_json()['age']
     sex = request.get_json()['sex']
+    email = request.get_json()['email']
     forecast = request.get_json()['forecast']
     
-    cur.execute("INSERT INTO patients (rut, firstname, lastname, address, telephone, age, sex, forecast) VALUES ('" +
+    cur.execute("INSERT INTO patients (rut, firstname, lastname, address, telephone, age, sex, email, forecast) VALUES ('" +
             str(rut) + "', '" +
             str(firstname) + "', '" +
             str(lastname) + "', '" +
             str(address) + "', '" +
             str(telephone) + "', '" +
             str(age) + "', '" +
-            str(sex) + "', '" +                                                
+            str(sex) + "', '" +
+            str(email) + "', '" +
             str(forecast) + "')")
     mysql.connection.commit()
 
@@ -138,6 +141,7 @@ def create_patients():
         'telephone' : telephone,
         'age' : age,
         'sex' : sex,
+        'email' : email,
         'forecast' : forecast
     }
 
@@ -152,10 +156,10 @@ def read_patients():
     cur.execute("SELECT * FROM patients")
     row_headers = [x[0]
         for x in cur.description] # this will extract row headers
-    dataNotification = cur.fetchall()
+    dataPatients = cur.fetchall()
     json_data = []
 
-    for result in dataNotification:
+    for result in dataPatients:
         json_data.append(dict(zip(row_headers, result)))
     return jsonify(json_data)
 
@@ -170,9 +174,10 @@ def update_patient(id):
         firstname = request.get_json()['firstname']
         lastname = request.get_json()['lastname']
         address = request.get_json()['address']
-        telephone = request.get_json()['telephone']    
+        telephone = request.get_json()['telephone']
         age = request.get_json()['age']
         sex = request.get_json()['sex']
+        email = request.get_json()['email']
         forecast = request.get_json()['forecast']
         cur.execute("""
             UPDATE patients
@@ -183,9 +188,10 @@ def update_patient(id):
                 telephone = %s,
                 age = %s,
                 sex = %s,
+                email = %s,
                 forecast = %s
             WHERE id=%s
-            """, (rut, firstname, lastname, address, telephone, age, sex, forecast, id,))
+            """, (rut, firstname, lastname, address, telephone, age, sex, email, forecast, id,))
         mysql.connection.commit()
         result = {
             'rut': rut,
@@ -195,6 +201,7 @@ def update_patient(id):
             'telephone': telephone,
             'age': age,
             'sex': sex,
+            'email': email,
             'forecast': forecast
         }
     return jsonify({'result': result})
