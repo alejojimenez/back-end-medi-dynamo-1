@@ -100,13 +100,14 @@ def login():
         data = {
             "user": user.serialize(),
             "token": access_token,
-            "expires": expiracion.total_seconds()*1000
+            "expires": expiracion.total_seconds()*1000,
+            "msg": "Success"
         }
 
         return jsonify(data), 200
 
 ###############################################################
-##                       CREATE - POST                       ##
+##                       CREATE = POST                       ##
 ###############################################################
 @app.route('/api/medidynamo/create/patients', methods=['POST'])
 def create_patients():
@@ -148,7 +149,7 @@ def create_patients():
     return jsonify({'result' : result})
 
 ############################################################
-##                       READ - GET                       ##
+##                       READ = GET                       ##
 ############################################################
 @app.route('/api/medidynamo/read/patients', methods=['GET'])
 def read_patients():
@@ -164,7 +165,7 @@ def read_patients():
     return jsonify(json_data)
 
 #######################################################################
-##                            UPDATE - PUT                           ##
+##                            UPDATE = PUT                           ##
 #######################################################################
 @app.route('/api/medidynamo/update/patient/<int:id>', methods=['PUT'])
 def update_patient(id):
@@ -207,7 +208,7 @@ def update_patient(id):
     return jsonify({'result': result})
 
 ##########################################################################
-##                             DELETE - DELETE                          ##
+##                             DELETE = DELETE                          ##
 ##########################################################################
 @app.route('/api/medidynamo/delete/patient/<int:id>', methods=['DELETE'])
 def delete_patient(id):
